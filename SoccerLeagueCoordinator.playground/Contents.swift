@@ -5,8 +5,8 @@
 let players: [[String: String]] = [["name": "Joe Smith","height": "42","footballExperience": "true", "guardian": "Jim and Jan Smith"], ["name": "Jill Tanner", "height": "36","footballExperience": "true", "guardian": "Clara Tanner"],["name": "Bill Bon","height": "43","footballExperience": "true","guardian": "Sara and Jenny Bon"],["name": "Eva Gordon","height": "45","footballExperience": "false","guardian": "Wendy and Mike Gordon"],["name": "Matt Gill","height": "40","footballExperience": "false","guardian": "Charles and Sylvia Gill"],["name": "Kimmy Stein","height": "41","footballExperience": "false","guardian": "Bill and Hillary Stein"],["name": "Sammy Adams","height": "45","footballExperience": "false","guardian": "Jeff Adams"],["name": "Karl Saygan","height": "42","footballExperience": "true","guardian": "Heather Bledsoe"],["name": "Suzane Greenberg","height": "44","footballExperience": "true","guardian": "Henrietta Dumas"],["name": "Sal Dali","height": "41","footballExperience": "false","guardian": "Gala Dali"],["name": "Joe Kavalier","height": "39","footballExperience": "false","guardian": "Sam and Elaine Kavalier"],["name": "Ben Finkelstein","height": "44","footballExperience": "false","guardian": "Aaron and Jill Finkelstein"],["name": "Diego Soto","height": "41","footballExperience": "true","guardian": "Robin and Sarika Soto"],["name": "Chloe Alaska","height": "47","footballExperience": "false","guardian": "David and Jamie Alaska"],["name": "Arnold Willis","height": "43","footballExperience": "false","guardian": "Claire Willis"],["name": "Phillip Helm","height": "44","footballExperience": "true","guardian": "Thomas Helm and Eva Jones"],["name": "Les Clay","height": "42","footballExperience": "true","guardian": "Wynonna Brown"],["name": "Herschel Krustofski","height": "45","footballExperience": "true","guardian": "Hyman and Rachel Krustofski"]]
 
 /** Declare and initialize experience-based arrays for future player sorting */
-var experiencedSoccerPlayers: [[String: String]] = [],
-  noviceSoccerPlayers: [[String: String]] = []
+var experiencedFootballPlayers: [[String: String]] = [],
+  noviceFootballPlayers: [[String: String]] = []
 
 /** Declare and initialize team arrays with basic structure and information */
 var teamRaptors: [String: Any] = ["roster": [], "mascot":"Raptors", "firstPracticeDate": "March 18", "firstPracticeTime": "1:00pm", "averageTeamHeight": 0, "totalPlayersWithExperience": 0],
@@ -21,9 +21,9 @@ var teamRaptors: [String: Any] = ["roster": [], "mascot":"Raptors", "firstPracti
 func separatePlayersByExperience(pool: [[String: String]]) -> () {
   for player in pool {
     if (player["footballExperience"] != nil && player["footballExperience"]! == "true"   ) {
-      experiencedSoccerPlayers.append(player)
+      experiencedFootballPlayers.append(player)
     } else {
-      noviceSoccerPlayers.append(player)
+      noviceFootballPlayers.append(player)
     }
   }
 }
@@ -50,7 +50,7 @@ func organizePlayersByHeight(pool: [[String: String]], order: String) -> [[Strin
 }
 
 /** 
-* Function to split a pool of players into the season's teams evening based on their array index
+* Function to split a pool of players into the season's teams based on their array index
 * params {pool: Array[String: Any]} - Organized array of player Dictionaries based on height
 * return {Void}
 * TODO: Improve function to accept a dynamic collection of teams
@@ -98,8 +98,8 @@ func splitPlayersIntoTeams(pool: [[String: String]]) -> () {
 }
 
 /**
-* Function to calculate a team's average height based on the player dictionary's "height" property
-* params {team} - A filtered team roster after they have been organized
+* Function to calculate a team's average height based on the player Dictionary's "height" property
+* params {team} - A filtered team roster after they have been sorted into their teams
 * return {Int} - The calculated average team height based on their team's current player count
 */
 func calculateAverageTeamHeight(team: Array<[String: String]>) -> Int {
@@ -115,7 +115,7 @@ func calculateAverageTeamHeight(team: Array<[String: String]>) -> Int {
 }
 
 /**
-* Function to compare the average team heights to ensure they are evenly distributed with a variance no greater than 1.5 inches
+* Function to compare the average of all team heights to ensure they are evenly distributed with a variance no greater than 1.5 inches
 * params {averageTeamHeights:Array<Int>} - An array of the average team heights
 * return {Bool} - The result to ensure that the teams are evening sorted based on height
 */
@@ -133,27 +133,28 @@ func compareAverageTeamHeights(averageTeamHeights: Array<Int>) -> Bool {
 }
 
 /**
- *
- * params {}
- * return {}
- */
+* Function to sort and compare the total number of players with previous football experience
+* params {expByTeam: Array<Int>} - An Array of Ints that represent the total number of experience players per team
+* return {Bool} - The result after comparing that all the teams have an identical number of experienced players
+* TODO: Refactor to filter out unique values in expByTeam instead of sorting and comparing
+*/
 func compareTotalExpPlayers(expByTeam: Array<Int>) -> Bool {
   
   /** Sort the array on integers in ASC order */
   let result = expByTeam.sorted()
   
-  /** Determine the tallest team and the shortest team */
+  /** Determine the team with the most and least experience players */
   let mostExpTeam = Double(result[result.count - 1])
   let leastExpTeam = Double(result[0])
   
-  /** Compare that the difference between team heights is no greater than 1.5 inches */
+  /** Compare the difference between experience totals to see if they are equal */
   return (mostExpTeam == leastExpTeam)
 }
 
 /** 
-* Function to generate the form letters to players after they have been divided
-* params {Dictionary} -
-* returns {void} - No return value expected, just prints letters to the console
+* Function to generate the form letters to players after they have been successfully sorted
+* params {team: Dictionary} - The team Dictionary with player and practice information
+* returns {Array<String>} - An Array of formatted Strings that could be printed to the console or sent in an email to the player's guardians
 */
 func generateTeamLetters(team: [String: Any]) -> Array<String> {
   let teamPracticeDate: String = team["firstPracticeDate"] as! String
@@ -170,16 +171,16 @@ func generateTeamLetters(team: [String: Any]) -> Array<String> {
   return teamLetters
 }
 
-/** Filter players by their previous soccer experience */
+/** Filter players by their previous football experience */
 separatePlayersByExperience(pool: players)
 
 /** Filter player pools by their height */
-noviceSoccerPlayers = organizePlayersByHeight(pool: noviceSoccerPlayers, order: "ASC")
-experiencedSoccerPlayers = organizePlayersByHeight(pool: experiencedSoccerPlayers, order: "DESC")
+noviceFootballPlayers = organizePlayersByHeight(pool: noviceFootballPlayers, order: "ASC")
+experiencedFootballPlayers = organizePlayersByHeight(pool: experiencedFootballPlayers, order: "DESC")
 
 /** Split organized player pools into teams */
-splitPlayersIntoTeams(pool: noviceSoccerPlayers)
-splitPlayersIntoTeams(pool: experiencedSoccerPlayers)
+splitPlayersIntoTeams(pool: noviceFootballPlayers)
+splitPlayersIntoTeams(pool: experiencedFootballPlayers)
 
 /** Calculate average team height and print the result to the console */
 teamRaptors["averageTeamHeight"] = calculateAverageTeamHeight(team: teamRaptors["roster"] as! Array<[String : String]>)
@@ -192,8 +193,8 @@ print("The Dragons average team height is \(teamDragons["averageTeamHeight"]!).\
 print("----\n\n")
 
 /** 
-* If the teams are separated into equal teams based on height, then generate the form letters to player guardians
-* otherwise, print an error to the console
+* If the teams are separated into equal teams based on height and total experienced players, then generate the form letters to player guardians
+* otherwise, print an error to the console with distribution totals
 */
 let averageTeamHeights: Array<Int> = [teamRaptors["averageTeamHeight"] as! Int, teamSharks["averageTeamHeight"] as! Int, teamDragons["averageTeamHeight"] as! Int]
 
